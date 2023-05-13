@@ -1,0 +1,22 @@
+### agnoster prompt ###
+set -g color_dir_bg ffd6ab
+set -g color_virtual_env_bg 3c3836
+set -g color_virtual_env_str ffd6ab
+
+set -g fish_color_normal white
+set -g fish_color_command white --bold
+set -g fish_color_quote white
+set -g fish_color_end white
+set -g fish_color_param white
+set -g fish_color_comment white
+set -g fish_color_match yellow
+set -g fish_color_search_match bryellow --background=brblack
+set -g fish_color_operator white
+set -g fish_color_escape white
+set -g fish_color_cwd ffd6ab
+set -g fish_color_autosuggestion grey
+set -g fish_color_user brgreen
+set -g fish_color_host normal
+set -g fish_pager_color_prefix white --bold --underline
+set -g fish_pager_color_description yellow
+set -g fish_pager_color_progress brwhite --background=cyan
