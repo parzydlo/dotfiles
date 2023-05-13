@@ -1,0 +1,4 @@
+map <C-i> recolor
+set selection-clipboard clipboard
+set recolor-lightcolor "#141414"
+set recolor-darkcolor "#FFD6AB"
