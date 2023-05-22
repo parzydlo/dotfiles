@@ -3,13 +3,7 @@ if status is-interactive
 end
 
 set -Ux VIRTUAL_ENV_DISABLE_PROMPT 1
-set -gx GTK_THEME Adwaita:dark
-set -gx DISPLAY (cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}'):0.0 #GWSL
-set -gx PULSE_SERVER tcp:(cat /etc/resolv.conf | grep nameserver | awk '{print $2; exit;}') #GWSL
 
-# Load pyenv automatically by appending
-# the following to ~/.config/fish/config.fish:
-
+set -x PYENV_ROOT $HOME/.pyenv
+set -x PATH $PYENV_ROOT/bin $PATH
 pyenv init - | source
-
-eval (/home/linuxbrew/.linuxbrew/bin/brew shellenv)

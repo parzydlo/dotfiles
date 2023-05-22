@@ -1,6 +1,6 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
-SETUVAR --export PYENV_ROOT:/home/parzydlo/\x2epyenv
+SETUVAR --export PYENV_ROOT:/Users/jan\x2eparzydlo/\x2epyenv
 SETUVAR --export VIRTUAL_ENV_DISABLE_PROMPT:1
 SETUVAR __fish_initialized:3400
 SETUVAR --export fish_color_autosuggestion:565f89
@@ -31,4 +31,4 @@ SETUVAR --export fish_pager_color_description:565f89
 SETUVAR --export fish_pager_color_prefix:7dcfff
 SETUVAR --export fish_pager_color_progress:565f89
 SETUVAR --export fish_pager_color_selected_background:\x2d\x2dbackground\x3d2e3c64
-SETUVAR fish_user_paths:/mnt/c/Program\x20Files/Docker/Docker/resources/bin\x1e/home/parzydlo/\x2elocal/bin\x1e/home/linuxbrew/\x2elinuxbrew/opt/postgresql\x4015/bin\x1e/home/parzydlo/\x2epyenv/bin
+SETUVAR fish_user_paths:/opt/homebrew/bin\x1e/mnt/c/Program\x20Files/Docker/Docker/resources/bin\x1e/home/parzydlo/\x2elocal/bin\x1e/home/linuxbrew/\x2elinuxbrew/opt/postgresql\x4015/bin\x1e/home/parzydlo/\x2epyenv/bin
