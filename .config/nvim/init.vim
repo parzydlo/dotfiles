@@ -15,20 +15,22 @@ set showtabline=2
 set relativenumber
 set cursorline
 
-" WSL clipboard
-set clipboard=unnamed
-let g:clipboard = {
-            \   'name': 'WslClipboard',
-            \   'copy': {
-            \      '+': 'clip.exe',
-            \      '*': 'clip.exe',
-            \    },
-            \   'paste': {
-            \      '+': 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-            \      '*': 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-            \   },
-            \   'cache_enabled': 0,
-            \ }
+" clipboard
+set clipboard+=unnamedplus
+" WSL-specific
+"set clipboard=unnamed
+"let g:clipboard = {
+            "\   'name': 'WslClipboard',
+            "\   'copy': {
+            "\      '+': 'clip.exe',
+            "\      '*': 'clip.exe',
+            "\    },
+            "\   'paste': {
+            "\      '+': 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+            "\      '*': 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+            "\   },
+            "\   'cache_enabled': 0,
+            "\ }
 
 
 " Press Enter to turn off highlighting and clear any message already displayed.
@@ -154,4 +156,4 @@ set foldexpr=nvim_treesitter#foldexpr()
 colorscheme tokyonight-storm
 "hi Normal ctermbg=none guibg=none
 
-let g:python3_host_prog = '/home/parzydlo/.pyenv/versions/neovim3/bin/python3'
+let g:python3_host_prog = '$HOME/.pyenv/versions/neovim3/bin/python3'
