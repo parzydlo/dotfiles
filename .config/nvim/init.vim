@@ -65,6 +65,7 @@ Plug 'scrooloose/nerdtree'
 Plug 'ryanoasis/vim-devicons'
 Plug 'preservim/nerdcommenter'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-obsession'
 Plug 'airblade/vim-gitgutter'
 Plug 'junegunn/goyo.vim'
 Plug 'mhinz/vim-startify'
@@ -135,7 +136,7 @@ let g:lightline = {
       \ 'subseparator': { 'left': '', 'right': '' }
       \ }
 
-let g:lightline.tabline = {'left': [['buffers']], 'right': [['close']]}
+let g:lightline.tabline = {'left': [['buffers']], 'right': [['%{ObsessionStatus()}','close']]}
 let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
 let g:lightline.component_type = {'buffers': 'tabsel'}
 
