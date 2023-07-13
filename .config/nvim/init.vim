@@ -39,8 +39,12 @@ set clipboard+=unnamedplus
 " Reload init.vim with <leader>+s
 map <leader>s :source ~/.config/nvim/init.vim<CR>
 
+" Cycle through buffer with tab/ shift+tab
 nnoremap  <silent>   <tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bnext<CR>
 nnoremap  <silent> <s-tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
+"
+" Close all buffers but the currently focused one with <leader>+b
+map <leader>b :%bd\|e#\|bd#<CR> 
 
 " auto install vim-plug and plugins:
 let plug_install = 0
@@ -54,6 +58,7 @@ endif
 unlet autoload_plug_path
 call plug#begin(stdpath('config') . '/plugged')
 " plugins here ...
+Plug 'rizzatti/dash.vim'
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
@@ -108,6 +113,10 @@ lua require('nvim-cmp')
 " telescope
 lua require('telescope-cfg')
 
+" startify
+let g:startify_change_to_dir = 0
+
+" nerdtree
 let NERDTreeMapActivateNode='l'
 let NEDRTreeMapDeactivateNode='h'
 let g:NERDTreeDirArrowExpandable = ''
