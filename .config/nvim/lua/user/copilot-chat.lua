@@ -65,6 +65,7 @@ chat.setup({
             description = 'AI Generate Commit',
         },
     },
+    event = 'VeryLazy',
 })
 
 utils.au('BufEnter', {

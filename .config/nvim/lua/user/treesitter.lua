@@ -1,3 +1,11 @@
+local vim = vim
+local opt = vim.opt
+
+opt.foldenable = false
+opt.foldmethod = "expr"
+opt.foldlevel = 9
+opt.foldexpr = "nvim-treesitter#foldexpr()"
+
 require'nvim-treesitter.configs'.setup {
   ensure_installed = {
     "vim",
@@ -23,4 +31,5 @@ require'nvim-treesitter.configs'.setup {
     enable = true,
     disable = { "python" },
   },
+  autopairs = { enable = true },
 }

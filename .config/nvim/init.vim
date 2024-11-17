@@ -1,6 +1,5 @@
 " G E N E R A L
 language en_GB
-let mapleader=" "
 set hlsearch
 set nocompatible
 set mouse=a
@@ -34,18 +33,6 @@ set clipboard+=unnamedplus
             "\ }
 
 
-" Press Enter to turn off highlighting and clear any message already displayed.
-:nnoremap <silent> <Enter> :nohlsearch<Bar>:echo<CR>
-
-" Reload init.vim with <leader>+s
-map <leader>s :source ~/.config/nvim/init.vim<CR>
-
-" Cycle through buffer with tab/ shift+tab
-nnoremap  <silent>   <tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bnext<CR>
-nnoremap  <silent> <s-tab>  :if &modifiable && !&readonly && &modified <CR> :write<CR> :endif<CR>:bprevious<CR>
-"
-" Close all buffers but the currently focused one with <leader>+b
-map <leader>b :%bd\|e#\|bd#<CR> 
 
 " auto install vim-plug and plugins:
 let plug_install = 0
@@ -60,15 +47,8 @@ unlet autoload_plug_path
 call plug#begin(stdpath('config') . '/plugged')
 " plugins here ...
 Plug 'nvim-lualine/lualine.nvim'
-Plug 'arkav/lualine-lsp-progress'
-Plug 'linrongbin16/lsp-progress.nvim'
 Plug 'rizzatti/dash.vim'
-Plug 'itchyny/lightline.vim'
-Plug 'mengelbrecht/lightline-bufferline'
-Plug 'folke/tokyonight.nvim', {'branch': 'main'}
-Plug 'ellisonleao/gruvbox.nvim'
 Plug 'olivercederborg/poimandres.nvim'
-Plug 'shinchu/lightline-gruvbox.vim'
 Plug 'edkolev/tmuxline.vim'
 Plug 'scrooloose/nerdtree'
 Plug 'ryanoasis/vim-devicons'
@@ -79,10 +59,12 @@ Plug 'airblade/vim-gitgutter'
 Plug 'junegunn/goyo.vim'
 Plug 'mhinz/vim-startify'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'neovim/nvim-lspconfig'
 Plug 'ibhagwan/fzf-lua'
-Plug 'olimorris/codecompanion.nvim'
 Plug 'folke/which-key.nvim'
+" lspconfig
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'neovim/nvim-lspconfig'
 " telescope
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 Plug 'nvim-lua/plenary.nvim'
@@ -94,7 +76,7 @@ Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp-signature-help'
-" nvim-cmp }
+Plug 'onsails/lspkind.nvim'
 " snippet engine
 Plug 'SirVer/ultisnips'
 " default snippets
@@ -104,7 +86,6 @@ Plug 'quangnguyen30192/cmp-nvim-ultisnips', {'rtp': '.'}
 Plug 'zbirenbaum/copilot.lua'
 Plug 'zbirenbaum/copilot-cmp'
 Plug 'CopilotC-Nvim/CopilotChat.nvim', { 'branch': 'canary' }
-Plug 'onsails/lspkind.nvim'
 call plug#end()
 call plug#helptags()
 " auto install vim-plug and plugins:
@@ -115,11 +96,12 @@ endif
 unlet plug_install
 
 "lua require('user.plugins')
+lua require('user.keymaps')
+lua require('user.lsp')
 lua require('user.lualine')
 lua require('user.copilot')
 lua require('user.copilot-chat')
 lua require('user.treesitter')
-lua require('user.lspconfig')
 lua require('user.cmp')
 lua require('user.telescope')
 
@@ -131,10 +113,6 @@ let NERDTreeMapActivateNode='l'
 let NEDRTreeMapDeactivateNode='h'
 let g:NERDTreeDirArrowExpandable = ''
 let g:NERDTreeDirArrowCollapsible = ''
-nnoremap <leader>n :NERDTreeFocus<CR>
-nnoremap <C-n> :NERDTree<CR>
-nnoremap <C-t> :NERDTreeToggle<CR>
-nnoremap <C-f> :NERDTreeFind<CR>
 
 
 " Indentation
@@ -145,10 +123,6 @@ set expandtab
 set smartindent
 set autoindent
 
-" Folding
-set foldlevel=9
-set foldmethod=expr
-set foldexpr=nvim_treesitter#foldexpr()
 
 lua << EOF
   require('poimandres').setup {
