@@ -52,6 +52,12 @@ local servers = {'pyright'}
 for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup({
         on_attach = on_attach,
+        --analysis = {
+            --autoSearchPaths = true,
+            --diagnosticMode = 'workspace',
+            --useLibraryCodeForTypes = true,
+            ----extraPaths = {'/home/toni/example/package}
+        --},
         capabilities = capabilities
     })
 end

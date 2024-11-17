@@ -1,4 +1,5 @@
 " G E N E R A L
+language en_GB
 let mapleader=" "
 set hlsearch
 set nocompatible
@@ -58,12 +59,15 @@ endif
 unlet autoload_plug_path
 call plug#begin(stdpath('config') . '/plugged')
 " plugins here ...
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'arkav/lualine-lsp-progress'
+Plug 'linrongbin16/lsp-progress.nvim'
 Plug 'rizzatti/dash.vim'
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
-Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
-Plug 'jhlgns/naysayer88.vim'
+Plug 'folke/tokyonight.nvim', {'branch': 'main'}
 Plug 'ellisonleao/gruvbox.nvim'
+Plug 'olivercederborg/poimandres.nvim'
 Plug 'shinchu/lightline-gruvbox.vim'
 Plug 'edkolev/tmuxline.vim'
 Plug 'scrooloose/nerdtree'
@@ -76,10 +80,13 @@ Plug 'junegunn/goyo.vim'
 Plug 'mhinz/vim-startify'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'neovim/nvim-lspconfig'
+Plug 'ibhagwan/fzf-lua'
+Plug 'olimorris/codecompanion.nvim'
+Plug 'folke/which-key.nvim'
 " telescope
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
 " nvim-cmp {
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
@@ -93,25 +100,28 @@ Plug 'SirVer/ultisnips'
 " default snippets
 Plug 'honza/vim-snippets', {'rtp': '.'}
 Plug 'quangnguyen30192/cmp-nvim-ultisnips', {'rtp': '.'}
+" copilot
+Plug 'zbirenbaum/copilot.lua'
+Plug 'zbirenbaum/copilot-cmp'
+Plug 'CopilotC-Nvim/CopilotChat.nvim', { 'branch': 'canary' }
+Plug 'onsails/lspkind.nvim'
 call plug#end()
 call plug#helptags()
 " auto install vim-plug and plugins:
 if plug_install
     PlugInstall --sync
 endif
+
 unlet plug_install
 
-" treesitter config
-lua require('treesitter')
-
-" lspconfig config
-lua require('nvim-lspconfig')
-
-" nvim-cmp configs
-lua require('nvim-cmp')
-
-" telescope
-lua require('telescope-cfg')
+"lua require('user.plugins')
+lua require('user.lualine')
+lua require('user.copilot')
+lua require('user.copilot-chat')
+lua require('user.treesitter')
+lua require('user.lspconfig')
+lua require('user.cmp')
+lua require('user.telescope')
 
 " startify
 let g:startify_change_to_dir = 0
@@ -126,28 +136,6 @@ nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
 
-" lightline
-function! LightlineFilename()
-  let root = fnamemodify(get(b:, 'git_dir'), ':h')
-  let path = expand('%:p')
-  if path[:len(root)-1] ==# root
-    return path[len(root)+1:]
-  endif
-  return expand('%')
-endfunction
-
-let g:lightline = {
-      \ 'component_function': {
-      \   'filename': 'LightlineFilename',
-      \ },
-      \ 'colorscheme' : 'tokyonight',
-      \ 'separator': { 'left': '', 'right': '' },
-      \ 'subseparator': { 'left': '', 'right': '' }
-      \ }
-
-let g:lightline.tabline = {'left': [['buffers']], 'right': [['%{ObsessionStatus()}','close']]}
-let g:lightline.component_expand = {'buffers': 'lightline#bufferline#buffers'}
-let g:lightline.component_type = {'buffers': 'tabsel'}
 
 " Indentation
 set nowrap
@@ -156,14 +144,18 @@ set shiftwidth=4
 set expandtab
 set smartindent
 set autoindent
-"
+
 " Folding
 set foldlevel=9
 set foldmethod=expr
 set foldexpr=nvim_treesitter#foldexpr()
 
-
-colorscheme tokyonight-storm
+lua << EOF
+  require('poimandres').setup {
+    bold_vert_split = true, -- use bold vertical separators
+  }
+EOF
+colorscheme poimandres
 "hi Normal ctermbg=none guibg=none
 
 let g:python3_host_prog = '$HOME/.pyenv/versions/neovim3/bin/python3'

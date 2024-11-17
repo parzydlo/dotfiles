@@ -1,34 +1,35 @@
 # This file contains fish universal variable definitions.
 # VERSION: 3.0
+SETUVAR --export LANG:en_US\x2eUTF\x2d8
 SETUVAR --export PYENV_ROOT:/Users/jan\x2eparzydlo/\x2epyenv
 SETUVAR --export VIRTUAL_ENV_DISABLE_PROMPT:1
 SETUVAR __fish_initialized:3400
-SETUVAR --export fish_color_autosuggestion:565f89
+SETUVAR --export fish_color_autosuggestion:506477
 SETUVAR fish_color_cancel:\x2dr
-SETUVAR --export fish_color_command:7dcfff
-SETUVAR --export fish_color_comment:565f89
+SETUVAR --export fish_color_command:5DE4C7
+SETUVAR --export fish_color_comment:A6ACCD
 SETUVAR fish_color_cwd:green
 SETUVAR fish_color_cwd_root:red
-SETUVAR --export fish_color_end:ff9e64
-SETUVAR --export fish_color_error:f7768e
-SETUVAR --export fish_color_escape:\x1d
+SETUVAR --export fish_color_end:91B4D5
+SETUVAR --export fish_color_error:FAE4FC
+SETUVAR --export fish_color_escape:D0679D
 SETUVAR fish_color_history_current:\x2d\x2dbold
 SETUVAR fish_color_host:normal
 SETUVAR fish_color_host_remote:yellow
-SETUVAR --export fish_color_normal:c0caf5
-SETUVAR --export fish_color_operator:9ece6a
-SETUVAR --export fish_color_param:9d7cd8
-SETUVAR --export fish_color_quote:e0af68
-SETUVAR --export fish_color_redirection:c0caf5
-SETUVAR --export fish_color_search_match:\x2d\x2dbackground\x3d2e3c64
-SETUVAR --export fish_color_selection:\x2d\x2dbackground\x3d2e3c64
+SETUVAR --export fish_color_normal:E4F0FB
+SETUVAR --export fish_color_operator:ADD7FF
+SETUVAR --export fish_color_param:E4F0FB
+SETUVAR --export fish_color_quote:5FB3A1
+SETUVAR --export fish_color_redirection:767C9D
+SETUVAR --export fish_color_search_match:\x2d\x2dbackground\x3d303340
+SETUVAR --export fish_color_selection:\x2d\x2dbackground\x3d303340
 SETUVAR fish_color_status:red
 SETUVAR fish_color_user:brgreen
 SETUVAR fish_color_valid_path:\x2d\x2dunderline
 SETUVAR fish_key_bindings:fish_default_key_bindings
-SETUVAR --export fish_pager_color_completion:c0caf5
-SETUVAR --export fish_pager_color_description:565f89
-SETUVAR --export fish_pager_color_prefix:7dcfff
-SETUVAR --export fish_pager_color_progress:565f89
-SETUVAR --export fish_pager_color_selected_background:\x2d\x2dbackground\x3d2e3c64
-SETUVAR fish_user_paths:/opt/homebrew/bin\x1e/mnt/c/Program\x20Files/Docker/Docker/resources/bin\x1e/home/parzydlo/\x2elocal/bin\x1e/home/linuxbrew/\x2elinuxbrew/opt/postgresql\x4015/bin\x1e/home/parzydlo/\x2epyenv/bin
+SETUVAR --export fish_pager_color_completion:E4F0FB
+SETUVAR --export fish_pager_color_description:A6ACCD
+SETUVAR --export fish_pager_color_prefix:42675A
+SETUVAR --export fish_pager_color_progress:A6ACCD
+SETUVAR --export fish_pager_color_selected_background:\x2d\x2dbackground\x3d303340
+SETUVAR fish_user_paths:/usr/local/bin\x1e/opt/homebrew/bin\x1e/mnt/c/Program\x20Files/Docker/Docker/resources/bin\x1e/home/parzydlo/\x2elocal/bin\x1e/home/linuxbrew/\x2elinuxbrew/opt/postgresql\x4015/bin\x1e/home/parzydlo/\x2epyenv/bin

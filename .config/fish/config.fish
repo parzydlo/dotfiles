@@ -1,3 +1,5 @@
+set -x LANG en_US.UTF-8
+
 if status is-interactive
     # Commands to run in interactive sessions can go here
 end
@@ -9,4 +11,7 @@ set -x PYENV_ROOT $HOME/.pyenv
 fish_add_path $PYENV_ROOT/bin
 pyenv init - | source
 
-__tokyonight_colors
+__poimandres_colors
+
+test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
+
