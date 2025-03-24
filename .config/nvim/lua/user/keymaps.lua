@@ -1,14 +1,3 @@
-local opts = { noremap = true, silent = true }
-local term_opts = { silent = true }
-
--- Shorten function name
-local keymap = vim.api.nvim_set_keymap
-
---Remap space as leader key
-keymap("", "<Space>", "<Nop>", opts)
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
 -- Modes
 --   normal_mode = "n",
 --   insert_mode = "i",
@@ -17,12 +6,32 @@ vim.g.maplocalleader = " "
 --   term_mode = "t",
 --   command_mode = "c",
 
+local opts = { noremap = true, silent = true }
+local term_opts = { silent = true }
+
+-- Shorten function name
+local keymap = vim.api.nvim_set_keymap
+
+-- Remap space as leader key
+keymap("", "<Space>", "<Nop>", opts)
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
+-- Mouse scroll
+local scroll_factor = "2"
+keymap('n', '<ScrollWheelUp>', scroll_factor .. '<C-y>', opts)
+keymap('n', '<ScrollWheelDown>', scroll_factor .. '<C-e>', opts)
+keymap('i', '<ScrollWheelUp>', scroll_factor .. '<C-y>', opts)
+keymap('i', '<ScrollWheelDown>', scroll_factor .. '<C-e>', opts)
+keymap('v', '<ScrollWheelUp>', scroll_factor .. '<C-y>', opts)
+keymap('v', '<ScrollWheelDown>', scroll_factor .. '<C-e>', opts)
+
 -- NORMAL --
 -- Reload init.vim
 keymap("n", "<leader>s", ":source ~/.config/nvim/init.vim<CR>", opts)
 
 -- NERDTree actions
-keymap("n", "<leader>n", ":NERDTreeFocus<CR>", opts)
+keymap("n", "<leader>", ":NERDTreeFocus<CR>", opts)
 keymap("n", "<C-n>", ":NERDTree<CR>", opts)
 keymap("n", "<C-t>", ":NERDTreeToggle<CR>", opts)
 keymap("n", "<C-f>", ":NERDTreeFind<CR>", opts)
@@ -30,7 +39,7 @@ keymap("n", "<C-f>", ":NERDTreeFind<CR>", opts)
 -- Toggle search highlighting
 keymap("n", "<leader>h", ":set hlsearch!<CR>", opts)
 
--- Turn off highlighting and clear displayed message
+-- Turn off highlighting and clear displayed messagge
 keymap("n", "<Enter>", ":nohlsearch<Bar>:echo<CR>", opts)
 
 -- Cycle through buffers

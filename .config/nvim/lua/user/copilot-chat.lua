@@ -3,9 +3,10 @@ utils.desc('<leader>a', 'AI')
 
 -- Copilot autosuggestions
 vim.g.copilot_no_tab_map = true
+vim.g.copilot_assume_mapped = true
+vim.g.copilot_tab_fallback = ""
 vim.g.copilot_hide_during_completion = 0
 vim.g.copilot_proxy_strict_ssl = 0
-vim.keymap.set('i', '<S-Tab>', 'copilot#Accept("\\<S-Tab>")', { expr = true, replace_keycodes = false })
 
 local chat = require('CopilotChat')
 local actions = require('CopilotChat.actions')

@@ -14,6 +14,7 @@ set laststatus=2
 set showtabline=2
 set relativenumber
 set cursorline
+set scrolloff=3
 
 " clipboard
 set clipboard+=unnamedplus
@@ -61,6 +62,7 @@ Plug 'mhinz/vim-startify'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'ibhagwan/fzf-lua'
 Plug 'folke/which-key.nvim'
+Plug 'karb94/neoscroll.nvim'
 " lspconfig
 Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
@@ -85,7 +87,7 @@ Plug 'quangnguyen30192/cmp-nvim-ultisnips', {'rtp': '.'}
 " copilot
 Plug 'zbirenbaum/copilot.lua'
 Plug 'zbirenbaum/copilot-cmp'
-Plug 'CopilotC-Nvim/CopilotChat.nvim', { 'branch': 'canary' }
+Plug 'CopilotC-Nvim/CopilotChat.nvim', { 'branch': 'main' }
 call plug#end()
 call plug#helptags()
 " auto install vim-plug and plugins:
@@ -96,14 +98,16 @@ endif
 unlet plug_install
 
 "lua require('user.plugins')
-lua require('user.keymaps')
 lua require('user.lsp')
+lua require('user.lspconfig')
+lua require('user.keymaps')
 lua require('user.lualine')
 lua require('user.copilot')
 lua require('user.copilot-chat')
 lua require('user.treesitter')
 lua require('user.cmp')
 lua require('user.telescope')
+lua require('user.neoscroll')
 
 " startify
 let g:startify_change_to_dir = 0
@@ -127,9 +131,11 @@ set autoindent
 lua << EOF
   require('poimandres').setup {
     bold_vert_split = true, -- use bold vertical separators
+    disable_background = true,
   }
 EOF
 colorscheme poimandres
+hi WinSeparator guifg=#2F3341
 "hi Normal ctermbg=none guibg=none
 
 let g:python3_host_prog = '$HOME/.pyenv/versions/neovim3/bin/python3'

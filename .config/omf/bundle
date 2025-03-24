@@ -3,3 +3,4 @@ package pyenv
 theme agnoster
 theme bobthefish
 theme default
+theme lambda

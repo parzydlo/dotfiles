@@ -47,8 +47,16 @@ local capabilities = require("cmp_nvim_lsp").default_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 
--- Use pyright or jedi_language_server
-local servers = {'pyright'}
+-- List of LSP servers to enable
+local servers = {
+    'pyright',       -- Python
+    'lua_ls',        -- Lua
+    'bashls',        -- Bash
+    'jsonls',        -- JSON
+    'yamlls',        -- YAML
+    'dockerls',      -- Docker
+}
+
 for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup({
         on_attach = on_attach,
@@ -58,15 +66,29 @@ for _, lsp in ipairs(servers) do
             --useLibraryCodeForTypes = true,
             ----extraPaths = {'/home/toni/example/package}
         --},
-        capabilities = capabilities
+        capabilities = capabilities,
+        flags = {
+            debounce_text_changes = 150,
+        },
     })
 end
+-- Minimalist diagnostic signs
+local signs = {
+  Error = "⨉",   -- or "E", "⨉", "•"
+  Warn  = "!",   -- or "W", "!", "›"
+  Hint  = "·",   -- or "H", "·", "?"
+  Info  = "ℹ",   -- or "I", "ℹ", "○"
+}
 
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+end
 -- Change diagnostic signs.
-vim.fn.sign_define("DiagnosticSignError", { text = "✗", texthl = "DiagnosticSignError" })
-vim.fn.sign_define("DiagnosticSignWarn", { text = "!", texthl = "DiagnosticSignWarn" })
-vim.fn.sign_define("DiagnosticSignInformation", { text = "", texthl = "DiagnosticSignInfo" })
-vim.fn.sign_define("DiagnosticSignHint", { text = "", texthl = "DiagnosticSignHint" })
+--vim.fn.sign_define("DiagnosticSignError", { text = "✗", texthl = "DiagnosticSignError" })
+--vim.fn.sign_define("DiagnosticSignWarn", { text = "!", texthl = "DiagnosticSignWarn" })
+--vim.fn.sign_define("DiagnosticSignInformation", { text = "", texthl = "DiagnosticSignInfo" })
+--vim.fn.sign_define("DiagnosticSignHint", { text = "", texthl = "DiagnosticSignHint" })
 
 -- global config for diagnostic
 vim.diagnostic.config({
