@@ -62,7 +62,6 @@ Plug 'mhinz/vim-startify'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'ibhagwan/fzf-lua'
 Plug 'folke/which-key.nvim'
-Plug 'karb94/neoscroll.nvim'
 " lspconfig
 Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
@@ -107,7 +106,6 @@ lua require('user.copilot-chat')
 lua require('user.treesitter')
 lua require('user.cmp')
 lua require('user.telescope')
-lua require('user.neoscroll')
 
 " startify
 let g:startify_change_to_dir = 0
@@ -138,4 +136,4 @@ colorscheme poimandres
 hi WinSeparator guifg=#2F3341
 "hi Normal ctermbg=none guibg=none
 
-let g:python3_host_prog = '$HOME/.pyenv/versions/neovim3/bin/python3'
+let g:python3_host_prog = '$HOME/.pyenv/versions/neovim/bin/python'

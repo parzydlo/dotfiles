@@ -21,6 +21,7 @@ function pyenv
     # Load pyenv into the environment
     command pyenv init --path | source
     command pyenv init - | source
+    command pyenv virtualenv-init - | source
 
     # Re-run the original command with the real pyenv
     command pyenv $argv

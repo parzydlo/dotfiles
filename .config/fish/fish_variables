@@ -2,6 +2,7 @@
 # VERSION: 3.0
 SETUVAR --export LANG:en_US\x2eUTF\x2d8
 SETUVAR --export PYENV_ROOT:/Users/jan\x2eparzydlo/\x2epyenv
+SETUVAR --export VENV_PROMPT_MAXLEN:4
 SETUVAR --export VIRTUAL_ENV_DISABLE_PROMPT:0
 SETUVAR __fish_initialized:3800
 SETUVAR --export fish_color_autosuggestion:506477
@@ -31,5 +32,5 @@ SETUVAR --export fish_pager_color_completion:E4F0FB
 SETUVAR --export fish_pager_color_description:A6ACCD
 SETUVAR --export fish_pager_color_prefix:42675A
 SETUVAR --export fish_pager_color_progress:A6ACCD
-SETUVAR --export fish_pager_color_selected_background:\x2d\x2dbackground\x3d303340
+SETUVAR --export fish_pager_color_selected_background:\x2d\x2dbackground\x3d506477
 SETUVAR fish_user_paths:/Users/jan\x2eparzydlo/\x2elocal/bin\x1e/usr/local/bin\x1e/opt/homebrew/bin\x1e/mnt/c/Program\x20Files/Docker/Docker/resources/bin\x1e/home/parzydlo/\x2elocal/bin\x1e/home/linuxbrew/\x2elinuxbrew/opt/postgresql\x4015/bin\x1e/home/parzydlo/\x2epyenv/bin
