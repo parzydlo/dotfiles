@@ -1,3 +1,5 @@
+local unpack = table.unpack or unpack
+
 local status_ok, lualine = pcall(require, "lualine")
 if not status_ok then
 	return
@@ -62,6 +64,25 @@ local spaces = function()
 	return "spaces: " .. vim.api.nvim_buf_get_option(0, "shiftwidth")
 end
 
+local molten_init = function()
+    return require('molten.status').initialized()
+end
+
+local function all_kernels_inline()
+  local ok, status = pcall(require, "molten.status")
+  if not ok then return "no kernel" end
+
+  local kernels = status.kernels() or ""
+  if kernels == "" then return "no kernel" end
+
+  local out = {}
+  for k in string.gmatch(kernels, "[^,%s]+") do
+    table.insert(out, k)
+  end
+
+  return table.concat(out, "  ")
+end
+
 lualine.setup({
 	options = {
 		icons_enabled = true,
@@ -113,8 +134,8 @@ lualine.setup({
       lualine_a = {'buffers'},
       lualine_b = {'branch'},
       lualine_c = {'filename'},
-      lualine_x = {},
-      lualine_y = {},
+      lualine_x = {all_kernels_inline},
+      lualine_y = {molten_init},
       lualine_z = {'tabs'}
     },
 	extensions = {},

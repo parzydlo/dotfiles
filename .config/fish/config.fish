@@ -28,3 +28,5 @@ function pyenv
 end
 
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
+
+alias claude="/Users/jan.parzydlo/.claude/local/claude"

@@ -31,7 +31,7 @@ keymap('v', '<ScrollWheelDown>', scroll_factor .. '<C-e>', opts)
 keymap("n", "<leader>s", ":source ~/.config/nvim/init.vim<CR>", opts)
 
 -- NERDTree actions
-keymap("n", "<leader>", ":NERDTreeFocus<CR>", opts)
+--keymap("n", "<leader>", ":NERDTreeFocus<CR>", opts)
 keymap("n", "<C-n>", ":NERDTree<CR>", opts)
 keymap("n", "<C-t>", ":NERDTreeToggle<CR>", opts)
 keymap("n", "<C-f>", ":NERDTreeFind<CR>", opts)
@@ -57,6 +57,38 @@ keymap("n", "<C-u>", "<C-u>zz", opts)
 keymap("n", "<A-j>", "<Esc>:m .+1<CR>==gi", opts)
 keymap("n", "<A-k>", "<Esc>:m .-2<CR>==gi", opts)
 
+-- Add all missing imports (if Pyright supports it)
+vim.keymap.set("n", "<leader>im", function()
+  vim.lsp.buf.code_action({
+    apply = true,
+    context = {
+      only = { "source.addMissingImports", "quickfix" },
+    },
+  })
+end, { desc = "LSP(pyright): Add all missing imports" })
+
+-- Auto-import symbol under cursor using completion hack
+vim.keymap.set("n", "<leader>ii", function()
+  local symbol = vim.fn.expand("<cword>")
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+
+  -- Start insert mode at the cursor position
+  vim.api.nvim_feedkeys("a", "n", false)
+  vim.defer_fn(function()
+    -- Trigger completion
+    vim.fn.complete(col + 1, { symbol })
+    vim.api.nvim_feedkeys(
+      vim.api.nvim_replace_termcodes("<C-y>", true, false, true),
+      "n",
+      false
+    )
+    vim.api.nvim_feedkeys(
+      vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
+      "n",
+      false
+    )
+  end, 50)
+end, { desc = "LSP(pyright): Auto-import symbol under cursor" })
 
 -- VISUAL --
 -- Stay in indent mode

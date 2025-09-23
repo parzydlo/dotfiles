@@ -48,7 +48,6 @@ unlet autoload_plug_path
 call plug#begin(stdpath('config') . '/plugged')
 " plugins here ...
 Plug 'nvim-lualine/lualine.nvim'
-Plug 'rizzatti/dash.vim'
 Plug 'olivercederborg/poimandres.nvim'
 Plug 'edkolev/tmuxline.vim'
 Plug 'scrooloose/nerdtree'
@@ -87,6 +86,10 @@ Plug 'quangnguyen30192/cmp-nvim-ultisnips', {'rtp': '.'}
 Plug 'zbirenbaum/copilot.lua'
 Plug 'zbirenbaum/copilot-cmp'
 Plug 'CopilotC-Nvim/CopilotChat.nvim', { 'branch': 'main' }
+" jupyter
+Plug 'benlubas/molten-nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'jmbuhr/otter.nvim'
+Plug 'quarto-dev/quarto-nvim'
 call plug#end()
 call plug#helptags()
 " auto install vim-plug and plugins:
@@ -98,14 +101,15 @@ unlet plug_install
 
 "lua require('user.plugins')
 lua require('user.lsp')
-lua require('user.lspconfig')
 lua require('user.keymaps')
+lua require('user.molten')
 lua require('user.lualine')
 lua require('user.copilot')
-lua require('user.copilot-chat')
+"lua require('user.copilot-chat')
 lua require('user.treesitter')
 lua require('user.cmp')
 lua require('user.telescope')
+lua require('user.quarto')
 
 " startify
 let g:startify_change_to_dir = 0
@@ -129,11 +133,12 @@ set autoindent
 lua << EOF
   require('poimandres').setup {
     bold_vert_split = true, -- use bold vertical separators
-    disable_background = true,
+    disable_background = true, -- disable background color
   }
 EOF
 colorscheme poimandres
 hi WinSeparator guifg=#2F3341
 "hi Normal ctermbg=none guibg=none
+lua require('user.highlight-fixes')
 
 let g:python3_host_prog = '$HOME/.pyenv/versions/neovim/bin/python'

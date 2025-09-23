@@ -13,7 +13,6 @@ end
 
 local function should_undo_copilot()
     if not vim.b.copilot_last_inserted then
-        vim.notify("Copilot undo check: No insertion flag set", vim.log.levels.INFO)
         return false
     end
 
@@ -22,19 +21,8 @@ local function should_undo_copilot()
     local cur_line = pos[2]
     local cur_col = pos[3]
 
-    -- Debugging output
-    vim.notify(string.format("Checking should_undo_copilot()\n"
-        .. "copilot_last_inserted: %s\n"
-        .. "Current position: %d, %d\n"
-        .. "Stored position: %s, %s\n",
-        vim.inspect(vim.b.copilot_last_inserted), cur_line, cur_col,
-        vim.inspect(vim.b.copilot_last_line), vim.inspect(vim.b.copilot_last_col)
-    ), vim.log.levels.INFO)
-
     -- Check if the cursor is still at the end of the Copilot insertion
     local res = (vim.b.copilot_last_line == cur_line and vim.b.copilot_last_col == cur_col)
-
-    vim.notify("Undo condition result: " .. tostring(res), vim.log.levels.INFO)
 
     return res
 end
@@ -54,7 +42,6 @@ local function handle_tab(fallback)
                 local pos = vim.fn.getcurpos()  -- Get final cursor position after Copilot insertion
                 vim.b.copilot_last_line = pos[2]  -- Line number
                 vim.b.copilot_last_col = pos[3]   -- Column number
-                vim.notify(string.format("Stored Copilot position AFTER buffer change: %d, %d", pos[2], pos[3]), vim.log.levels.INFO)
             end
         })
     elseif vim.fn["UltiSnips#CanExpandSnippet"]() == 1 then
