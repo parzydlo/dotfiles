@@ -29,4 +29,8 @@ end
 
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
 
+# Fix arrow key bindings (modern Fish syntax)
+bind \e\[A history-search-backward
+bind \e\[B history-search-forward
+
 alias claude="/Users/jan.parzydlo/.claude/local/claude"
