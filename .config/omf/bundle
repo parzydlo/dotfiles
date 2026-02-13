@@ -2,5 +2,11 @@ package https://github.com/sujaybokil/fish-gruvbox
 package pyenv
 theme agnoster
 theme bobthefish
+theme budspencer
 theme default
+theme easy-eel
+theme fisk
 theme lambda
+theme lambda-zero
+theme plain
+theme trout
