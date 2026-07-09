@@ -38,6 +38,7 @@ Project MEMORY.md and this index are auto-injected before each tool call via Pre
 Topic files:
 - ~/.claude/memory/general.md — cross-project conventions and preferences
 - ~/.claude/memory/tools/pywebview.md — pywebview Windows quirks (easy_drag, size readback, resize)
+- ~/.claude/memory/tools/dotfiles.md — dotfiles bare repo (~\.dotfiles, branch windows, config wrapper)
 
 ## Global Memory Reference Rule
 
