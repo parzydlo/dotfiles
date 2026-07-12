@@ -1,0 +1,13 @@
+require("user.options")
+require("user.keymaps")
+require("user.pack")
+require("user.colorscheme")
+require("user.oil")
+require("user.gitsigns")
+require("user.lualine")
+require("user.telescope")
+require("user.treesitter")
+require("user.lsp")
+require("user.completion")
+
+require("which-key").setup()
