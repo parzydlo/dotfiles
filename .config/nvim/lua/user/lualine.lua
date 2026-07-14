@@ -6,7 +6,7 @@ local diagnostics = {
 	"diagnostics",
 	sources = { "nvim_diagnostic" },
 	sections = { "error", "warn" },
-	symbols = { error = " ", warn = " " },
+	symbols = { error = " ", warn = " " },
 	colored = false,
 	update_in_insert = false,
 	always_visible = true,
@@ -15,14 +15,14 @@ local diagnostics = {
 local diff = {
 	"diff",
 	colored = false,
-	symbols = { added = " ", modified = " ", removed = " " },
+	symbols = { added = " ", modified = " ", removed = " " },
 	cond = hide_in_width,
 }
 
 local branch = {
 	"branch",
 	icons_enabled = true,
-	icon = "",
+	icon = "",
 }
 
 local location = {
@@ -45,8 +45,8 @@ require("lualine").setup({
 		icons_enabled = true,
 		theme = "poimandres",
 		globalstatus = true,
-		component_separators = { left = "", right = "" },
-		section_separators = { left = "", right = "" },
+		component_separators = { left = "", right = "" },
+		section_separators = { left = "", right = "" },
 		disabled_filetypes = { "alpha", "dashboard", "Outline" },
 		always_divide_middle = true,
 	},
