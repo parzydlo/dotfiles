@@ -39,6 +39,7 @@ Topic files:
 - ~/.claude/memory/general.md — cross-project conventions and preferences
 - ~/.claude/memory/tools/pywebview.md — pywebview Windows quirks (easy_drag, size readback, resize)
 - ~/.claude/memory/tools/dotfiles.md — dotfiles bare repo (~\.dotfiles, branch windows, config wrapper)
+- ~/.claude/memory/tools/nvim.md — neovim 0.12 config (~\.config\nvim + AppData symlink, vim.pack, mason, treesitter parser limitation)
 
 ## Global Memory Reference Rule
 
