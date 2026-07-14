@@ -12,6 +12,9 @@ opt.scrolloff = 3
 opt.showmode = false
 opt.laststatus = 3 -- single global statusline (lualine globalstatus)
 opt.showtabline = 2
+-- force truecolor: auto-detection can't see through psmux (no terminal
+-- capability reporting), and every terminal in use supports RGB anyway
+opt.termguicolors = true
 
 -- clipboard
 opt.clipboard:append("unnamedplus")
