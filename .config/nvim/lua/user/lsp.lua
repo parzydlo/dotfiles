@@ -51,7 +51,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			vim.lsp.buf.hover({ max_width = 60 })
 		end, opts)
 		map("n", "gi", vim.lsp.buf.implementation, opts)
-		map("n", "gr", vim.lsp.buf.references, opts)
+		-- references: builtin grr (quickfix) or <leader>fr (telescope);
+		-- no gr map so builtin grn/gra aren't delayed by ambiguity
 		map("n", "<C-k>", vim.lsp.buf.signature_help, opts)
 		map("n", "<leader>rn", vim.lsp.buf.rename, opts)
 		map("n", "<leader>ca", vim.lsp.buf.code_action, opts)
