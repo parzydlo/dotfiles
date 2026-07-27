@@ -32,14 +32,14 @@ When I say "reorganize memory":
 
 ## Global Memory
 
-Project MEMORY.md and this index are auto-injected before each tool call via PreToolUse hook
-(~/.claude/hooks/pre-tool-memory.sh). Load specific topic files only when relevant.
+Project MEMORY.md and the global index are auto-injected once per session via the PreToolUse
+hook (~/.claude/hooks/pre-tool-memory.py). Load specific topic files only when relevant.
 
-Topic files:
-- ~/.claude/memory/general.md — cross-project conventions and preferences
-- ~/.claude/memory/tools/pywebview.md — pywebview Windows quirks (easy_drag, size readback, resize)
-- ~/.claude/memory/tools/dotfiles.md — dotfiles bare repo (~\.dotfiles, branch windows, config wrapper)
-- ~/.claude/memory/tools/nvim.md — neovim 0.12 config (~\.config\nvim + AppData symlink, vim.pack, mason, treesitter parser limitation)
+Topic file index: **~/.claude/memory/memory.md** — read it at session start; it lists every
+topic file with a one-line description.
+
+Do NOT enumerate topic files here. This file is committed to a public dotfiles repo and must
+stay project-agnostic — no project names, paths, or domain detail.
 
 ## Global Memory Reference Rule
 
@@ -47,8 +47,8 @@ Whenever you work in a project and read (or create) its MEMORY.md, check that it
 ## Global Memory section. If it does not, add it near the top, after the H1.
 
 The section must be a SHORT POINTER only. Do NOT duplicate the topic file list into project
-MEMORY.md. The list lives in CLAUDE.md (single source of truth). Project MEMORY.md has a
-200-line budget — use it for project knowledge, not boilerplate.
+MEMORY.md. The list lives in ~/.claude/memory/memory.md (single source of truth). Project
+MEMORY.md has a 200-line budget — use it for project knowledge, not boilerplate.
 
 Canonical template for project MEMORY.md:
 
@@ -57,8 +57,8 @@ Canonical template for project MEMORY.md:
 Read ~/.claude/CLAUDE.md for memory rules and topic files.
 
 When a new file is added to ~/.claude/memory/:
-- Add it to the ## Global Memory topic file list in ~/.claude/CLAUDE.md only
-- Do NOT update individual project MEMORY.md files
+- Add it to the index table in ~/.claude/memory/memory.md only
+- Do NOT update ~/.claude/CLAUDE.md or individual project MEMORY.md files
 
 ## Repo Memory Auto-Init
 
