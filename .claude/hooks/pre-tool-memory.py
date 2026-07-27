@@ -8,11 +8,24 @@ import tempfile
 from pathlib import Path
 
 
+def session_key():
+    """Stable per-session id from the hook payload on stdin.
+
+    PPID is NOT stable on Windows — a new shell is spawned per hook call, so a
+    PPID-keyed flag never matches and leaks one temp file per tool call.
+    """
+    try:
+        payload = json.loads(sys.stdin.read() or '{}')
+        sid = payload.get('session_id')
+        if sid:
+            return re.sub(r'[^a-zA-Z0-9]', '', str(sid))[:40]
+    except Exception:
+        pass
+    return f"ppid-{os.getppid()}"
+
+
 def main():
-    # Use parent process ID as session identifier
-    # PPID = Claude Code process — stable within a session, new for each subagent
-    ppid = os.getppid()
-    flag_path = Path(tempfile.gettempdir()) / f"claude-memory-loaded-{ppid}"
+    flag_path = Path(tempfile.gettempdir()) / f"claude-memory-loaded-{session_key()}"
 
     # Already loaded for this process — exit silently (no output = no context injection)
     if flag_path.exists():

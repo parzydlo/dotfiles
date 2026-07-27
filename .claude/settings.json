@@ -1,5 +1,5 @@
 {
-  "model": "claude-fable-5[1m]",
+  "model": "opus",
   "hooks": {
     "PreToolUse": [
       {
@@ -7,9 +7,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 $HOME/.claude/hooks/pre-tool-memory.py",
+            "command": "& $HOME/.pyenv/pyenv-win/versions/3.13.13/python.exe $HOME/.claude/hooks/pre-tool-memory.py",
             "shell": "powershell",
-            "timeout": 5
+            "timeout": 30
           }
         ]
       }
