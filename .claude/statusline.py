@@ -5,15 +5,34 @@ import subprocess
 import sys
 
 
+RESET = '\033[0m'
+DIM = '\033[2m'
+BAR_WIDTH = 10
+
+
+def make_bar(pct, width=BAR_WIDTH):
+    """Fully dimmed; fill level reads from the glyphs, not colour or weight."""
+    on = max(0, min(width, round((pct / 100) * width)))
+    return f"{DIM}{'█' * on}{'░' * (width - on)}{RESET}"
+
+
 def main():
+    # Git Bash doesn't inherit PYTHONIOENCODING, so stdout falls back to cp1252
+    # and the bar's block chars raise UnicodeEncodeError. Force UTF-8.
     try:
-        data = json.load(sys.stdin)
+        sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
+    try:
+        data = json.loads(sys.stdin.read())
     except Exception:
         sys.exit(0)
 
     cwd = data.get('workspace', {}).get('current_dir', '')
     model = data.get('model', {}).get('display_name', '')
-    used = data.get('context_window', {}).get('used_percentage')
+    effort = data.get('effort', {}).get('level', '')
+    used = (data.get('context_window', {}) or {}).get('used_percentage')
 
     dir_name = os.path.basename(cwd) if cwd else ''
 
@@ -29,13 +48,14 @@ def main():
         except Exception:
             pass
 
-    parts = [dir_name]
+    parts = [dir_name] if dir_name else []
     if branch:
         parts.append(branch)
     if model:
-        parts.append(model)
+        label = f'{model} · {effort}' if effort else model
+        parts.append(f'{DIM}{label}{RESET}')
     if used is not None:
-        parts.append(f'ctx:{round(used)}%')
+        parts.append(f'{make_bar(used)} {DIM}{round(used)}%{RESET}')
 
     print('  '.join(parts), end='')
 
