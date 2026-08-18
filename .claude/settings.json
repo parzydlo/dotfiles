@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "& $HOME/.pyenv/pyenv-win/versions/3.13.13/python.exe $HOME/.claude/hooks/pre-tool-memory.py",
+            "command": "& $HOME/.claude/venv/Scripts/python.exe $HOME/.claude/hooks/pre-tool-memory.py",
             "shell": "powershell",
             "timeout": 30
           }
@@ -17,14 +17,15 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "python3 $HOME/.claude/statusline.py"
+    "command": "$HOME/.claude/venv/Scripts/python.exe $HOME/.claude/statusline.py"
   },
-  "effortLevel": "medium",
+  "effortLevel": "high",
   "autoUpdatesChannel": "latest",
   "tui": "fullscreen",
   "theme": "dark",
   "editorMode": "normal",
   "preferredNotifChannel": "terminal_bell",
+  "autoCompactEnabled": true,
   "terminalProgressBarEnabled": true,
   "skipAutoPermissionPrompt": true
 }
