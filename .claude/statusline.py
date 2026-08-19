@@ -32,6 +32,7 @@ def main():
     cwd = data.get('workspace', {}).get('current_dir', '')
     model = data.get('model', {}).get('display_name', '')
     effort = data.get('effort', {}).get('level', '')
+    style = (data.get('output_style', {}) or {}).get('name', '').lower()
     used = (data.get('context_window', {}) or {}).get('used_percentage')
 
     dir_name = os.path.basename(cwd) if cwd else ''
@@ -52,7 +53,7 @@ def main():
     if branch:
         parts.append(branch)
     if model:
-        label = f'{model} · {effort}' if effort else model
+        label = ' · '.join(x for x in (model, effort, style) if x)
         parts.append(f'{DIM}{label}{RESET}')
     if used is not None:
         parts.append(f'{make_bar(used)} {DIM}{round(used)}%{RESET}')
