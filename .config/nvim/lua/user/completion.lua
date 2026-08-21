@@ -1,12 +1,74 @@
--- Native LSP completion (replaces nvim-cmp + UltiSnips)
+-- Neovim 0.12 ships a full autocompletion engine, so nvim-cmp is not needed:
+--   'autocomplete'  opens the popup as you type, on every keypress
+--   'complete'      lists the sources; "o" is the omnifunc, which vim.lsp
+--                   points at v:lua.vim.lsp.omnifunc when a client attaches
+--   'completeopt'   "fuzzy" gives subsequence matching, "popup" the doc window
+-- Together those are nvim-cmp's nvim_lsp + buffer sources without the plugin.
+--
+-- Why this replaced vim.lsp.completion's autotrigger: that only fired on the
+-- server's triggerCharacters ("." and "("), so mid-identifier there was no
+-- popup and <Tab> fell through to inserting spaces. 'autocomplete' is what
+-- makes <Tab> mean the same thing on every keystroke.
+vim.o.autocomplete = true
+vim.o.autocompletedelay = 50 -- raise this if it feels eager while typing fast
+vim.o.complete = ".^5,w^5,b^5,u^5" -- fallback for buffers with no LSP client
 vim.opt.completeopt = { "menuone", "noselect", "popup", "fuzzy" }
+
+-- lspkind's default preset, copied byte for byte from lspkind.nvim rather than
+-- retyped: these are Nerd Font private-use glyphs and do not survive being
+-- read back out of tool output.
+local kind_icons = {
+	Text = "󰉿",
+	Method = "󰆧",
+	Function = "󰊕",
+	Constructor = "",
+	Field = "󰜢",
+	Variable = "󰀫",
+	Class = "󰠱",
+	Interface = "",
+	Module = "",
+	Property = "󰜢",
+	Unit = "󰑭",
+	Value = "󰎠",
+	Enum = "",
+	Keyword = "󰌋",
+	Snippet = "",
+	Color = "󰏘",
+	File = "󰈙",
+	Reference = "󰈇",
+	Folder = "󰉋",
+	EnumMember = "",
+	Constant = "󰏿",
+	Struct = "󰙅",
+	Event = "",
+	Operator = "󰆕",
+	TypeParameter = "",
+}
 
 vim.api.nvim_create_autocmd("LspAttach", {
 	group = vim.api.nvim_create_augroup("user_lsp_completion", { clear = true }),
 	callback = function(ev)
 		local client = vim.lsp.get_client_by_id(ev.data.client_id)
 		if client and client:supports_method("textDocument/completion") then
-			vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+			-- LSP only for this buffer. The buffer word sources return the same
+			-- identifiers the server already knows, and nothing dedupes across
+			-- sources the way nvim-cmp did, so every local symbol showed twice.
+			-- Buffers with no server keep the global 'complete' set below.
+			vim.bo[ev.buf].complete = "o"
+			vim.lsp.completion.enable(true, client.id, ev.buf, {
+				-- 'autocomplete' drives the trigger now. enable() is still
+				-- required for the <C-y> side effects -- snippet expansion,
+				-- auto-import additionalTextEdits, the resolve popup -- and
+				-- those apply to omnifunc-driven items too.
+				autotrigger = false,
+				convert = function(item)
+					local kind = item.kind and vim.lsp.protocol.CompletionItemKind[item.kind]
+					return {
+						kind = kind_icons[kind] or "",
+						menu = "[LSP]",
+					}
+				end,
+			})
 		end
 	end,
 })
@@ -53,3 +115,23 @@ end, expr)
 keymap("i", "<C-Space>", function()
 	vim.lsp.completion.get()
 end, { silent = true })
+
+-- Command-line autocompletion, replacing cmp-cmdline. Straight out of
+-- :h cmdline-autocompletion -- 'wildoptions' already defaults to pum,tagfile.
+vim.o.wildmode = "noselect:lastused,full"
+
+vim.api.nvim_create_autocmd("CmdlineChanged", {
+	group = vim.api.nvim_create_augroup("user_cmdline_completion", { clear = true }),
+	pattern = { ":", "/", "?" },
+	callback = function()
+		vim.fn.wildtrigger()
+	end,
+})
+
+-- keep <Up>/<Down> walking history rather than moving through the menu
+keymap("c", "<Up>", function()
+	return vim.fn.wildmenumode() == 1 and "<C-E><Up>" or "<Up>"
+end, expr)
+keymap("c", "<Down>", function()
+	return vim.fn.wildmenumode() == 1 and "<C-E><Down>" or "<Down>"
+end, expr)

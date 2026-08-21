@@ -1,9 +1,15 @@
+local actions = require("telescope.actions")
+
 require("telescope").setup({
 	defaults = {
 		mappings = {
 			i = {
 				-- actions.which_key shows the mappings for your picker
 				["<C-h>"] = "which_key",
+				-- telescope's default Tab is toggle_selection, which made Tab
+				-- mean something different here than in insert mode
+				["<Tab>"] = actions.move_selection_next,
+				["<S-Tab>"] = actions.move_selection_previous,
 			},
 		},
 	},

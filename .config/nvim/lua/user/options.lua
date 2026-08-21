@@ -12,6 +12,8 @@ opt.scrolloff = 3
 opt.showmode = false
 opt.laststatus = 3 -- single global statusline (lualine globalstatus)
 opt.showtabline = 2
+opt.pumheight = 10 -- cap the completion menu; 0 lets it fill the window
+opt.updatetime = 250 -- default 4000ms makes every CursorHold feature feel dead
 -- force truecolor: auto-detection can't see through psmux (no terminal
 -- capability reporting), and every terminal in use supports RGB anyway
 opt.termguicolors = true
