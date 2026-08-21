@@ -1,6 +1,9 @@
 {
+  "env": {
+    "CLAUDE_CODE_TMUX_TRUECOLOR": "1",
+    "CLAUDE_CODE_USE_POWERSHELL_TOOL": "1"
+  },
   "model": "opus",
-  "outputStyle": "Unslop",
   "hooks": {
     "PreToolUse": [
       {
@@ -20,6 +23,7 @@
     "type": "command",
     "command": "$HOME/.claude/venv/Scripts/python.exe $HOME/.claude/statusline.py"
   },
+  "outputStyle": "Unslop",
   "effortLevel": "high",
   "autoUpdatesChannel": "latest",
   "tui": "fullscreen",
@@ -28,5 +32,9 @@
   "preferredNotifChannel": "terminal_bell",
   "autoCompactEnabled": true,
   "terminalProgressBarEnabled": true,
-  "skipAutoPermissionPrompt": true
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "enabledPlugins": {
+    "rust-analyzer-lsp@claude-plugins-official": true
+  }
 }
