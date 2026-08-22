@@ -12,7 +12,13 @@
 vim.o.autocomplete = true
 vim.o.autocompletedelay = 50 -- raise this if it feels eager while typing fast
 vim.o.complete = ".^5,w^5,b^5,u^5" -- fallback for buffers with no LSP client
-vim.opt.completeopt = { "menuone", "noselect", "popup", "fuzzy" }
+-- No "fuzzy": it is flat subsequence matching with no preference for prefix
+-- hits, so in a Python buffer "str" matched SOCK_STREAM, SIGTRAP, STARTUPINFO
+-- and 143 other stdlib symbols. Dropping it takes that list to 29, all of which
+-- actually start with "str". nvim-cmp did allow fuzzy matching, but it set
+-- disallow_partial_fuzzy_matching and sorted with compare.exact/compare.offset,
+-- so prefix hits dominated; the builtin flag has no such gradation.
+vim.opt.completeopt = { "menuone", "noselect", "popup" }
 
 -- lspkind's default preset, copied byte for byte from lspkind.nvim rather than
 -- retyped: these are Nerd Font private-use glyphs and do not survive being
