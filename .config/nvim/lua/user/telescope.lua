@@ -1,3 +1,4 @@
+local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 
 -- Shell-style completion for the prompt, which telescope has no builtin for:
@@ -9,6 +10,12 @@ local action_state = require("telescope.actions.state")
 -- S-Tab cycles backwards. Selection movement stays on telescope's own <C-n>/<C-p>
 -- and <Down>/<Up>.
 --
+-- Bound only in find_files and buffers, where an entry ordinal is a path worth
+-- putting in the prompt. In live_grep the ordinals are matched LINES, so expanding
+-- to one is meaningless; those pickers keep Tab on selection movement. Per-picker
+-- mappings win over defaults: telescope turns them into an attach_mappings function
+-- that runs first, and the defaults loop skips keys already applied.
+--
 -- The candidate list is snapshotted on the first Tab because set_prompt re-runs
 -- the filter: reading picker.manager again on the next press would cycle within
 -- the one entry we had just written into the prompt.
@@ -17,7 +24,10 @@ local MAX_CANDIDATES = 500
 local function snapshot(picker)
 	local out = {}
 	for entry in picker.manager:iter() do
-		out[#out + 1] = entry.ordinal
+		-- the buffers picker ordinals are "2 : C:/path/to/file.py"; drop the buffer
+		-- number so the prompt gets the path alone. A Windows drive letter is not a
+		-- digit, so "C:/..." is left intact.
+		out[#out + 1] = (entry.ordinal:gsub("^%s*%d+%s*:%s*", ""))
 		if #out >= MAX_CANDIDATES then
 			break
 		end
@@ -77,20 +87,33 @@ local function expand(step)
 	end
 end
 
+local expand_mappings = {
+	i = {
+		["<Tab>"] = expand(1),
+		["<S-Tab>"] = expand(-1),
+	},
+}
+
 require("telescope").setup({
 	defaults = {
 		mappings = {
 			i = {
 				-- actions.which_key shows the mappings for your picker
 				["<C-h>"] = "which_key",
-				["<Tab>"] = expand(1),
-				["<S-Tab>"] = expand(-1),
+				-- pickers without prompt expansion: Tab walks the results, rather
+				-- than telescope's default toggle_selection
+				["<Tab>"] = actions.move_selection_next,
+				["<S-Tab>"] = actions.move_selection_previous,
 			},
 		},
 	},
 	pickers = {
 		find_files = {
 			theme = "dropdown",
+			mappings = expand_mappings,
+		},
+		buffers = {
+			mappings = expand_mappings,
 		},
 	},
 })
