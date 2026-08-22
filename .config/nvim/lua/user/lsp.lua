@@ -18,9 +18,13 @@ require("mason-lspconfig").setup({
 	},
 })
 
--- basedpyright and ruff are uv tools (~/.local/bin), not mason packages:
--- mason's pypi installer needs a real python.exe, and PATH has only pyenv-win's
--- python.bat shim plus the Microsoft Store alias stub. Reinstall either with
+-- basedpyright and ruff are uv tools (~/.local/bin), not mason packages.
+-- mason's pypi installer resolves "python"/"python3" off PATH and parses
+-- `--version`; here exepath("python") hits pyenv-win's EXTENSION-LESS shim,
+-- which Windows cannot execute (shell_error -1, empty output), so no candidate
+-- ever matches and mason reports "Unable to find python3 installation in PATH".
+-- Putting a real python.exe first on PATH would fix it, but uv already manages
+-- both servers without one. Reinstall either with
 --   uv tool install basedpyright
 --   uv tool install ruff
 vim.lsp.enable({

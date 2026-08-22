@@ -6,9 +6,9 @@
 -- Ruff reads its settings from init_options, NOT from settings -- see the
 -- docstring in nvim-lspconfig's lsp/ruff.lua.
 --
--- The binary comes from `uv tool install ruff` (~/.local/bin/ruff.exe), not
--- from mason: mason's pypi installer needs a real python.exe and PATH has only
--- pyenv-win's python.bat shim.
+-- The binary comes from `uv tool install ruff` (~/.local/bin/ruff.exe), not from
+-- mason: mason's pypi installer cannot find a usable python here (see the note
+-- in lua/user/lsp.lua).
 return {
 	init_options = {
 		settings = {
