@@ -73,6 +73,23 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
+-- 'autocomplete' is global, so it also fires in prompt buffers -- typing a
+-- telescope query popped up a keyword-completion menu over the picker. Prompt
+-- buffers are for queries, not for editing text, so turn it off there. Keyed on
+-- buftype rather than the TelescopePrompt filetype so any prompt-based UI is
+-- covered. <Tab> keeps working: telescope binds it in the picker itself.
+--
+-- InsertEnter, not BufEnter: telescope sets buftype AFTER the buffer is entered,
+-- so a BufEnter check still sees an empty buftype and does nothing.
+vim.api.nvim_create_autocmd("InsertEnter", {
+	group = vim.api.nvim_create_augroup("user_prompt_no_autocomplete", { clear = true }),
+	callback = function(ev)
+		if vim.bo[ev.buf].buftype == "prompt" then
+			vim.bo[ev.buf].autocomplete = false
+		end
+	end,
+})
+
 local keymap = vim.keymap.set
 local expr = { expr = true, silent = true }
 
