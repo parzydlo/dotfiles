@@ -118,6 +118,13 @@ require("telescope").setup({
 	},
 })
 
+-- fzf-native swaps telescope's Lua sorter for fzf's C implementation and adds
+-- fzf query syntax: ^prefix, suffix$, 'exact, !invert. Compiled by the
+-- PackChanged hook in user/pack.lua; fall back quietly if that did not run.
+if not pcall(require("telescope").load_extension, "fzf") then
+	vim.notify("telescope-fzf-native not built; using the Lua sorter", vim.log.levels.WARN)
+end
+
 local builtin = require("telescope.builtin")
 vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
 vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Live grep" })
