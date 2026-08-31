@@ -1,0 +1,19 @@
+[
+  {
+    "name": "Discord",
+    "pattern": "\\\\Discord\\\\app-[^\\\\]+\\\\Discord\\.exe",
+    "volume": 0.05,
+    "process": "Discord",
+    "launch": {
+      "path": "%LOCALAPPDATA%\\Discord\\Update.exe",
+      "args": ["--processStart", "Discord.exe"]
+    },
+    "icon": "%LOCALAPPDATA%\\Discord\\app.ico",
+    "runKey": "Discord",
+    "shortcuts": [
+      "%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Discord.lnk",
+      "%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Discord Inc\\Discord.lnk",
+      "%APPDATA%\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\Discord.lnk"
+    ]
+  }
+]
