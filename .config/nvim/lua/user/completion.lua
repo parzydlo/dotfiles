@@ -79,6 +79,39 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	end,
 })
 
+-- Gating the automatic trigger.
+--
+-- The builtin engine fires on any text change, whatever produced it, and the
+-- menu it opens with an empty base is 203 items: every stdlib symbol
+-- basedpyright knows, in alphabetical order. So indenting an empty line, or
+-- just opening one with o, popped a full-screen menu. nvim-cmp never did that
+-- (its keyword_pattern needs a word character) and 'autocomplete' has no
+-- equivalent knob, so the rule is applied by hand here: the menu is allowed
+-- only when the cursor sits right after a non-blank character.
+--
+-- Every hook below runs BEFORE the change it judges. That is deliberate --
+-- clearing 'autocomplete' from TextChangedI is too late, the trigger has
+-- already been scheduled by then, and it does not close a menu that is up.
+local function gate_autocomplete(buf, on)
+	-- Prompt buffers stay off unconditionally, see the InsertEnter rule below.
+	if vim.bo[buf].buftype ~= "prompt" then
+		vim.bo[buf].autocomplete = on
+	end
+end
+
+local function blank_before_cursor()
+	return vim.api.nvim_get_current_line():sub(1, vim.fn.col(".") - 1):match("^%s*$") ~= nil
+end
+
+-- Typed characters: whitespace never opens the menu, the next word character
+-- turns it back on.
+vim.api.nvim_create_autocmd("InsertCharPre", {
+	group = vim.api.nvim_create_augroup("user_autocomplete_gate", { clear = true }),
+	callback = function(ev)
+		gate_autocomplete(ev.buf, vim.v.char:match("^%s$") == nil)
+	end,
+})
+
 -- 'autocomplete' is global, so it also fires in prompt buffers -- typing a
 -- telescope query popped up a keyword-completion menu over the picker. Prompt
 -- buffers are for queries, not for editing text, so turn it off there. Keyed on
@@ -87,17 +120,59 @@ vim.api.nvim_create_autocmd("LspAttach", {
 --
 -- InsertEnter, not BufEnter: telescope sets buftype AFTER the buffer is entered,
 -- so a BufEnter check still sees an empty buftype and does nothing.
+--
+-- For ordinary buffers this is the entry point that covers o, O, cc and S: they
+-- leave the cursor after nothing but indent.
 vim.api.nvim_create_autocmd("InsertEnter", {
 	group = vim.api.nvim_create_augroup("user_prompt_no_autocomplete", { clear = true }),
 	callback = function(ev)
 		if vim.bo[ev.buf].buftype == "prompt" then
 			vim.bo[ev.buf].autocomplete = false
+		else
+			gate_autocomplete(ev.buf, not blank_before_cursor())
 		end
 	end,
 })
 
 local keymap = vim.keymap.set
 local expr = { expr = true, silent = true }
+
+-- Keys that edit without going through InsertCharPre. <CR>, <C-u> and <C-w>
+-- always leave the cursor after a line start, indent or word boundary; <C-t>
+-- and <C-d> only matter on a line that is still blank. <BS> has to look at
+-- what the deletion will leave behind.
+local function gate_and(keys)
+	return function()
+		gate_autocomplete(vim.api.nvim_get_current_buf(), false)
+		return keys
+	end
+end
+
+keymap("i", "<C-u>", gate_and("<C-u>"), expr)
+keymap("i", "<C-w>", gate_and("<C-w>"), expr)
+
+for _, key in ipairs({ "<C-t>", "<C-d>" }) do
+	keymap("i", key, function()
+		if blank_before_cursor() then
+			gate_autocomplete(vim.api.nvim_get_current_buf(), false)
+		end
+		return key
+	end, expr)
+end
+
+-- Clearing 'autocomplete' does not close a menu that is already up, so dismiss
+-- it with <C-e> in the same keystroke when the deletion lands back on blanks.
+keymap("i", "<BS>", function()
+	local before = vim.api.nvim_get_current_line():sub(1, vim.fn.col(".") - 1)
+	local left = vim.fn.strcharpart(before, 0, math.max(0, vim.fn.strchars(before) - 1))
+	local last = left:sub(-1)
+	local blank = last == "" or last:match("^%s$") ~= nil
+	gate_autocomplete(vim.api.nvim_get_current_buf(), not blank)
+	if blank and vim.fn.pumvisible() == 1 then
+		return "<C-e><BS>"
+	end
+	return "<BS>"
+end, expr)
 
 -- Tab / S-Tab: cycle the popup menu, or jump between snippet stops (old cmp behaviour)
 keymap("i", "<Tab>", function()
@@ -131,6 +206,8 @@ keymap("i", "<CR>", function()
 	if vim.fn.pumvisible() == 1 and vim.fn.complete_info({ "selected" }).selected >= 0 then
 		return "<C-y>"
 	end
+	-- a fresh line starts on indent, which must not open the menu
+	gate_autocomplete(vim.api.nvim_get_current_buf(), false)
 	return "<CR>"
 end, expr)
 
