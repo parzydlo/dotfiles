@@ -53,9 +53,10 @@ local function inline_message(diagnostic)
 end
 
 vim.diagnostic.config({
+	-- prefix and spacing stay at nvim's defaults ("■", four columns), which
+	-- is what the pre-migration config rendered; the "▎" bar read as a second
+	-- window separator down the middle of the buffer.
 	virtual_text = {
-		spacing = 2,
-		prefix = "▎",
 		format = inline_message,
 	},
 	signs = {
@@ -67,9 +68,13 @@ vim.diagnostic.config({
 		},
 	},
 	-- re-rendering on every keystroke is what makes highlighting churn while
-	-- typing; the sign column and underline still update on InsertLeave
+	-- typing; the sign column and virtual text still update on InsertLeave
 	update_in_insert = false,
-	underline = true,
+	-- No underline: basedpyright's DiagnosticUnderline* extmarks land at
+	-- priority 150, above treesitter (100) and semantic tokens (125), so an
+	-- error repainted the whole expression it spans. Severity is already in
+	-- the sign column and in the virtual text.
+	underline = false,
 	severity_sort = true,
 	float = {
 		focusable = false,
@@ -124,13 +129,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		end, opts)
 		map("n", "<leader>q", vim.diagnostic.setloclist, opts)
 
-		-- If highlighting still breaks mid-token while typing, basedpyright's
-		-- semantic tokens are the cause (they land on a stale document version
-		-- and fight treesitter). Uncomment to fall back to treesitter alone:
-		-- local client = vim.lsp.get_client_by_id(ev.data.client_id)
-		-- if client and client.name == "basedpyright" then
-		--     vim.lsp.semantic_tokens.enable(false, { client_id = client.id, bufnr = ev.buf })
-		-- end
+		-- basedpyright's semantic tokens outrank treesitter (priority 125 vs
+		-- 100) but only apply once the server's answer matches the current
+		-- buffer version, so a token whose colour the two sources disagree on
+		-- changes a beat after it is typed. The disagreements poimandres has
+		-- are patched in colorscheme.lua and after/queries/python. To drop the
+		-- server's tokens entirely instead:
+		-- vim.lsp.semantic_tokens.enable(false, { bufnr = ev.buf })
 	end,
 })
 

@@ -26,6 +26,16 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 		hl("PmenuMatchSel", { fg = p.teal1, bold = true })
 		hl("ComplMatchIns", { fg = p.blueGray3 })
 
+		-- poimandres predates the treesitter capture renames, so it defines
+		-- @property but not @variable.member, which is the name the python
+		-- parser actually emits. Attribute access therefore rendered in the
+		-- plain text colour until basedpyright's semantic tokens arrived
+		-- (@lsp.type.property links to @property, priority 125 over
+		-- treesitter's 100) and then flipped to blue. Same colour from both
+		-- sources, no flip. @method/@function.method has the same gap; left
+		-- alone because it would recolour every method call.
+		hl("@variable.member", { link = "@property" })
+
 		-- poimandres sets these to bg = blue2 (#ADD7FF) with no fg: a bright
 		-- light-blue block under near-white text. Nothing calls
 		-- document_highlight today, so this is pre-emptive.
