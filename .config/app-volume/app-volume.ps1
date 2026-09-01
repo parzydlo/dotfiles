@@ -192,7 +192,23 @@ namespace AppVolume {
     string id; s.GetSessionIdentifier(out id);
     string name = IsLive(pid) ? Process.GetProcessById((int)pid).ProcessName : "(not running)";
     rows.Add(string.Format("  pid={0,-6} state={1} vol={2} {3}", pid, state, F(level), name));
-    rows.Add("    " + id);
+    rows.Add("    id       " + id);
+    // An app can register several sessions sharing one exe path (Discord registers a
+    // separate one for notification sounds and for voice output). These are the fields
+    // that can tell them apart.
+    string display = null, icon = null, instance = null;
+    Guid group = Guid.Empty;
+    try { s.GetDisplayName(out display); } catch { }
+    try { s.GetIconPath(out icon); } catch { }
+    try { s.GetSessionInstanceIdentifier(out instance); } catch { }
+    try { s.GetGroupingParam(out group); } catch { }
+    bool isSystem = false;
+    try { isSystem = (s.IsSystemSoundsSession() == 0); } catch { }
+    rows.Add("    display  " + (string.IsNullOrEmpty(display) ? "(empty)" : display));
+    rows.Add("    icon     " + (string.IsNullOrEmpty(icon) ? "(empty)" : icon));
+    rows.Add("    group    " + group);
+    rows.Add("    sysSnd   " + isSystem);
+    rows.Add("    instance " + instance);
    }
    return rows;
   }
@@ -206,7 +222,10 @@ namespace AppVolume {
   ///
   /// Inactive sessions ARE set. State 0 is normal for an app that has registered its session
   /// but not yet played a sound, which is exactly the window worth catching.
-  public static List<string> Apply(string pattern, float volume) {
+  /// pidFilter narrows the match to specific processes. null means no filter; an empty array
+  /// means a filter is configured but no process currently qualifies, so nothing matches and
+  /// the caller keeps polling.
+  public static List<string> Apply(string pattern, float volume, uint[] pidFilter) {
    var rows = new List<string>();
    var rx = new Regex(pattern, RegexOptions.IgnoreCase);
    foreach (var pair in Sessions()) {
@@ -216,6 +235,7 @@ namespace AppVolume {
     if (id == null || !rx.IsMatch(id)) continue;
     uint pid; s.GetProcessId(out pid);
     if (!IsLive(pid)) continue;
+    if (pidFilter != null && Array.IndexOf(pidFilter, pid) < 0) continue;
 
     var vol = (ISimpleAudioVolume)s;
     float current;
@@ -236,6 +256,36 @@ namespace AppVolume {
 '@
 }
 
+function Get-SessionPidFilter {
+    <#
+    Restricts which of an app's processes count, for apps that register more than one mixer
+    session. Discord registers two under the same exe path and they are distinguishable only
+    by process:
+
+      --type=renderer                                       -> voice chat output
+      --type=utility --utility-sub-type=audio.mojom.AudioService -> notification sounds
+
+    Discord's voice engine opens WASAPI directly from the renderer, while notification sounds
+    are ordinary web audio and go through Chromium's audio service. Session identifier,
+    display name, icon path and grouping param cannot tell the two apart: the identifiers are
+    byte-identical, display and icon are empty, and the grouping GUID is random per session.
+
+    Returns $null when no filter is configured, or a possibly-empty pid array when one is.
+    Empty means "configured but nothing qualifies yet", which keeps the caller polling.
+    #>
+    param($App)
+
+    if (-not ($App.PSObject.Properties.Name -contains 'processMatch') -or
+        [string]::IsNullOrWhiteSpace($App.processMatch)) { return $null }
+
+    $procs = Get-CimInstance Win32_Process -Filter "Name='$($App.process).exe'" -ErrorAction SilentlyContinue
+    $ids = @($procs | Where-Object { $_.CommandLine -and $_.CommandLine -match $App.processMatch } |
+             Select-Object -ExpandProperty ProcessId)
+    # Unary comma: without it PowerShell unrolls a 0- or 1-element array and the "no filter"
+    # meaning of $null would come back by accident.
+    return , [uint32[]]$ids
+}
+
 function Set-AppVolume {
     <#
     Polls until a live matching session appears, then sets it. Returns $true if anything
@@ -250,7 +300,10 @@ function Set-AppVolume {
     $deadline = (Get-Date).AddSeconds($Seconds)
 
     while ($true) {
-        $rows = [AppVolume.Mixer]::Apply($App.pattern, $volume)
+        # Recomputed every pass: the process that owns the session may not exist yet. On the
+        # observed 2026-09-01 launch the renderer appeared 1s in and the audio service 2s in.
+        $pidFilter = Get-SessionPidFilter -App $App
+        $rows = [AppVolume.Mixer]::Apply($App.pattern, $volume, $pidFilter)
         if ($rows.Count -gt 0) {
             foreach ($row in $rows) {
                 $status, $processId, $old, $new = $row -split '\|'
