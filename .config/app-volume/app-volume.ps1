@@ -241,13 +241,14 @@ namespace AppVolume {
     float current;
     if (vol.GetMasterVolume(out current) != 0) continue;
 
-    if (Math.Abs(current - volume) < 0.001f) {
-     rows.Add("keep|" + pid + "|" + F(current) + "|" + F(volume));
-    } else {
-     Guid ctx = Guid.Empty;
-     int hr = vol.SetMasterVolume(volume, ref ctx);
-     rows.Add((hr == 0 ? "set" : "fail") + "|" + pid + "|" + F(current) + "|" + F(volume));
-    }
+    // Always write, even when the level already matches. Discord's two sessions share one
+    // stored value, so the LAST write decides what Windows remembers for the next launch.
+    // Skipping a redundant write would hand that decision to whichever target ran before,
+    // which is how the notification slider would come back loud.
+    Guid ctx = Guid.Empty;
+    int hr = vol.SetMasterVolume(volume, ref ctx);
+    string status = hr != 0 ? "fail" : (Math.Abs(current - volume) < 0.001f ? "keep" : "set");
+    rows.Add(status + "|" + pid + "|" + F(current) + "|" + F(volume));
    }
    return rows;
   }
@@ -273,13 +274,13 @@ function Get-SessionPidFilter {
     Returns $null when no filter is configured, or a possibly-empty pid array when one is.
     Empty means "configured but nothing qualifies yet", which keeps the caller polling.
     #>
-    param($App)
+    param($App, $Target)
 
-    if (-not ($App.PSObject.Properties.Name -contains 'processMatch') -or
-        [string]::IsNullOrWhiteSpace($App.processMatch)) { return $null }
+    if (-not ($Target.PSObject.Properties.Name -contains 'processMatch') -or
+        [string]::IsNullOrWhiteSpace($Target.processMatch)) { return $null }
 
     $procs = Get-CimInstance Win32_Process -Filter "Name='$($App.process).exe'" -ErrorAction SilentlyContinue
-    $ids = @($procs | Where-Object { $_.CommandLine -and $_.CommandLine -match $App.processMatch } |
+    $ids = @($procs | Where-Object { $_.CommandLine -and $_.CommandLine -match $Target.processMatch } |
              Select-Object -ExpandProperty ProcessId)
     # Unary comma: without it PowerShell unrolls a 0- or 1-element array and the "no filter"
     # meaning of $null would come back by accident.
@@ -296,28 +297,44 @@ function Set-AppVolume {
     param($App, [int]$Seconds)
 
     Initialize-Audio
-    $volume   = [float]$App.volume
     $deadline = (Get-Date).AddSeconds($Seconds)
 
-    while ($true) {
+    # Targets are applied strictly in config order, one at a time, and the order matters.
+    # Discord's two sessions share one session identifier, which is the key Windows stores the
+    # level under, so only ONE value survives a restart and it is restored to BOTH sliders.
+    # The last target applied is the one that gets remembered, so the quiet one goes last:
+    # then a launch that happens before this script runs comes up quiet, which is harmless,
+    # rather than coming up loud, which is the whole problem being solved.
+    $index = 0
+    while ($index -lt $App.targets.Count) {
+        $target = $App.targets[$index]
+        $label  = "$($App.name)/$($target.label)"
+
         # Recomputed every pass: the process that owns the session may not exist yet. On the
-        # observed 2026-09-01 launch the renderer appeared 1s in and the audio service 2s in.
-        $pidFilter = Get-SessionPidFilter -App $App
-        $rows = [AppVolume.Mixer]::Apply($App.pattern, $volume, $pidFilter)
+        # observed 2026-09-01 launch the audio service and renderer both appeared 1s in.
+        $pidFilter = Get-SessionPidFilter -App $App -Target $target
+        $rows = [AppVolume.Mixer]::Apply($App.pattern, [float]$target.volume, $pidFilter)
+
         if ($rows.Count -gt 0) {
             foreach ($row in $rows) {
                 $status, $processId, $old, $new = $row -split '\|'
                 switch ($status) {
-                    'set'  { Write-Log "$($App.name): pid $processId $old -> $new" }
-                    'keep' { Write-Log "$($App.name): pid $processId already at $new" }
-                    'fail' { Write-Log "$($App.name): pid $processId FAILED to set $old -> $new" -AsError }
+                    'set'  { Write-Log "${label}: pid $processId $old -> $new" }
+                    'keep' { Write-Log "${label}: pid $processId already at $new" }
+                    'fail' { Write-Log "${label}: pid $processId FAILED to set $old -> $new" -AsError }
                 }
             }
-            return $true
+            $index++
+            continue
         }
-        if ((Get-Date) -ge $deadline) { return $false }
+
+        if ((Get-Date) -ge $deadline) {
+            Write-Log "${label}: no live audio session matched" -AsError
+            return $false
+        }
         Start-Sleep -Milliseconds 500
     }
+    return $true
 }
 
 # ---------------------------------------------------------------------------
