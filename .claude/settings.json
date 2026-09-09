@@ -23,6 +23,9 @@
     "type": "command",
     "command": "$HOME/.claude/venv/Scripts/python.exe $HOME/.claude/statusline.py"
   },
+  "enabledPlugins": {
+    "rust-analyzer-lsp@claude-plugins-official": true
+  },
   "outputStyle": "Unslop",
   "effortLevel": "high",
   "autoUpdatesChannel": "latest",
@@ -32,9 +35,5 @@
   "preferredNotifChannel": "terminal_bell",
   "autoCompactEnabled": true,
   "terminalProgressBarEnabled": true,
-  "agentPushNotifEnabled": true,
-  "skipAutoPermissionPrompt": true,
-  "enabledPlugins": {
-    "rust-analyzer-lsp@claude-plugins-official": true
-  }
+  "agentPushNotifEnabled": true
 }
