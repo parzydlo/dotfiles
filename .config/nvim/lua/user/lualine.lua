@@ -85,7 +85,7 @@ require("lualine").setup({
 		lualine_b = { "branch" },
 		lualine_c = { "filename" },
 		lualine_x = {},
-		lualine_y = {},
+		lualine_y = { { require("user.lsp_status") } },
 		lualine_z = { "tabs" },
 	},
 	extensions = { "oil", "fugitive", "mason" },
