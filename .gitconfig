@@ -1,3 +1,4 @@
-[user]
-	name = Jan Parzydło
-	email = janparzydlo@gmail.com
+# Identity is per machine: put [user] name/email in ~/.gitconfig.local
+# (untracked). A missing include file is silently skipped.
+[include]
+	path = ~/.gitconfig.local

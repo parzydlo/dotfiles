@@ -34,4 +34,4 @@ try {
     Write-Verbose "PSReadLine colours not applied: $_"
 }
 
-oh-my-posh init pwsh --config 'C:\Users\Jan\.config\oh-my-posh\poimandres.omp.json' | Invoke-Expression  # [omp-manager]
+oh-my-posh init pwsh --config "$HOME\.config\oh-my-posh\poimandres.omp.json" | Invoke-Expression  # [omp-manager]

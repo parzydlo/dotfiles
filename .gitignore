@@ -13,8 +13,10 @@
 
 __pycache__/
 
-# machine-local state next to tracked config
-.config/app-volume/*.log
-.config/app-volume/wiring-backup.json
+# per-machine git identity, included from .gitconfig
+.gitconfig.local
+
+# machine-local tools and state next to tracked config
+.config/app-volume/
 .config/cagent/
 .config/powershell/Modules/Microsoft.PowerToys.Configure/
