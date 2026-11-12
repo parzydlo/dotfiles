@@ -38,7 +38,7 @@ def main():
 
     # Map project dir to .claude/projects key.
     # Claude Code sanitises the CWD by replacing every non-alphanumeric character with '-'.
-    # e.g. C:\Users\Jan\workspace\gtpsp_tweaks -> C--Users-Jan-workspace-gtpsp-tweaks
+    # e.g. C:\Users\me\workspace\my_project -> C--Users-me-workspace-my-project
     mapped = re.sub(r'[^a-zA-Z0-9]', '-', project_dir)
 
     home = Path.home()

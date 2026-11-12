@@ -1,1 +1,20 @@
-.claude/venv/
+# Work tree is $HOME and status.showUntrackedFiles is off, so nothing warns
+# before a directory-level `config add` stages secrets or machine state.
+# Rules here only affect files that are not tracked yet.
+
+# Claude Code: allowlist. Everything else in ~/.claude is credentials,
+# daemon keys, transcripts, caches or per-project memory.
+.claude/*
+!.claude/CLAUDE.md
+!.claude/settings.json
+!.claude/statusline.py
+!.claude/hooks/
+!.claude/output-styles/
+
+__pycache__/
+
+# machine-local state next to tracked config
+.config/app-volume/*.log
+.config/app-volume/wiring-backup.json
+.config/cagent/
+.config/powershell/Modules/Microsoft.PowerToys.Configure/
