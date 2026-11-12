@@ -24,10 +24,11 @@ local MAX_CANDIDATES = 500
 local function snapshot(picker)
 	local out = {}
 	for entry in picker.manager:iter() do
-		-- the buffers picker ordinals are "2 : C:/path/to/file.py"; drop the buffer
+		-- the buffers picker ordinals are "2 : src\file.py"; drop the buffer
 		-- number so the prompt gets the path alone. A Windows drive letter is not a
-		-- digit, so "C:/..." is left intact.
-		out[#out + 1] = (entry.ordinal:gsub("^%s*%d+%s*:%s*", ""))
+		-- digit, so "C:\..." is left intact. Separators go into the prompt as "/",
+		-- which the slash-insensitive sorter below matches against "\".
+		out[#out + 1] = (entry.ordinal:gsub("^%s*%d+%s*:%s*", ""):gsub("\\", "/"))
 		if #out >= MAX_CANDIDATES then
 			break
 		end
@@ -96,6 +97,12 @@ local expand_mappings = {
 
 require("telescope").setup({
 	defaults = {
+		-- telescope's default plus --path-separator, so grep results show "/" on
+		-- Windows like the prompt does (a no-op elsewhere)
+		vimgrep_arguments = {
+			"rg", "--color=never", "--no-heading", "--with-filename",
+			"--line-number", "--column", "--smart-case", "--path-separator", "/",
+		},
 		mappings = {
 			i = {
 				-- actions.which_key shows the mappings for your picker
@@ -110,6 +117,8 @@ require("telescope").setup({
 	pickers = {
 		find_files = {
 			theme = "dropdown",
+			-- the command telescope picks when rg is installed, plus "/" separators
+			find_command = { "rg", "--files", "--color", "never", "--path-separator", "/" },
 			mappings = expand_mappings,
 		},
 		buffers = {
@@ -123,6 +132,42 @@ require("telescope").setup({
 -- PackChanged hook in user/pack.lua; fall back quietly if that did not run.
 if not pcall(require("telescope").load_extension, "fzf") then
 	vim.notify("telescope-fzf-native not built; using the Lua sorter", vim.log.levels.WARN)
+end
+
+-- Windows paths reach telescope with "\" from bufname, v:oldfiles and
+-- vim.uri_to_fname (rg is told to print "/" above, but buffers and LSP results
+-- do not come from rg), so typing "src/main" matched nothing there. Wrap both
+-- sorters so the entry and the prompt are compared with "/" as the only
+-- separator. Done after load_extension because fzf-native replaces the sorters
+-- there. The prompt keeps "\ ", fzf's escape for a literal space; any other "\"
+-- (a pasted Windows path) becomes "/". Display text is untouched; the highlighter
+-- gets the same one-byte swap, so match positions still line up.
+if vim.fn.has("win32") == 1 then
+	local function prompt_slashes(prompt)
+		return (prompt:gsub("()\\", function(pos)
+			return prompt:sub(pos + 1, pos + 1) == " " and "\\" or "/"
+		end))
+	end
+
+	local function slash_insensitive(make_sorter)
+		return function(opts)
+			local sorter = make_sorter(opts)
+			local score, highlight = sorter.scoring_function, sorter.highlighter
+			sorter.scoring_function = function(self, prompt, line, ...)
+				return score(self, prompt_slashes(prompt), (line:gsub("\\", "/")), ...)
+			end
+			if highlight then
+				sorter.highlighter = function(self, prompt, display)
+					return highlight(self, prompt_slashes(prompt), (display:gsub("\\", "/")))
+				end
+			end
+			return sorter
+		end
+	end
+
+	local conf = require("telescope.config").values
+	conf.file_sorter = slash_insensitive(conf.file_sorter)
+	conf.generic_sorter = slash_insensitive(conf.generic_sorter)
 end
 
 local builtin = require("telescope.builtin")
